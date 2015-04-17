@@ -43,7 +43,7 @@ public class DynamicBlurView: UIView {
     private var displayLink: CADisplayLink?
     private let DisplayLinkSelector: Selector = "displayDidRefresh:"
     private var blurLayer: BlurLayer {
-        return layer as! BlurLayer
+        return layer as BlurLayer
     }
     
     private var blurPresentationLayer: BlurLayer {
@@ -151,7 +151,7 @@ public class DynamicBlurView: UIView {
     }
     
     public override func displayLayer(layer: CALayer!) {
-        let blurRadius: CGFloat
+        var blurRadius: CGFloat
         
         if let radius = fromBlurRadius {
             if layer.presentationLayer() == nil {
@@ -306,7 +306,7 @@ public extension UIImage {
         
         let tempFlags = vImage_Flags(kvImageEdgeExtend + kvImageGetTempBufferSize)
         let tempSize = vImageBoxConvolve_ARGB8888(&inBuffer, &outBuffer, nil, 0, 0, boxSize, boxSize, nil, tempFlags)
-        let tempBuffer = malloc(tempSize)
+        let tempBuffer = malloc(UInt(tempSize))
         
         let provider = CGImageGetDataProvider(imageRef)
         let copy = CGDataProviderCopyData(provider)
@@ -327,12 +327,12 @@ public extension UIImage {
         
         let space = CGImageGetColorSpace(imageRef)
         let bitmapInfo = CGImageGetBitmapInfo(imageRef)
-        let ctx = CGBitmapContextCreate(inBuffer.data, Int(inBuffer.width), Int(inBuffer.height), 8, inBuffer.rowBytes, space, bitmapInfo)
+        let ctx = CGBitmapContextCreate(inBuffer.data, UInt(inBuffer.width), UInt(inBuffer.height), 8, inBuffer.rowBytes, space, bitmapInfo)
         
         if let color = blendColor {
             CGContextSetFillColorWithColor(ctx, color.CGColor)
             CGContextSetBlendMode(ctx, kCGBlendModeNormal)
-            CGContextFillRect(ctx, CGRect(x: 0, y: 0, width: width, height: height))
+            CGContextFillRect(ctx, CGRectMake(0, 0, CGFloat(width), CGFloat(height)))
         }
         
         let bitmap = CGBitmapContextCreateImage(ctx);
